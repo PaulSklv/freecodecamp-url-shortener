@@ -14,8 +14,22 @@ var port = process.env.PORT || 3000;
 /** this project needs a db !! **/ 
 // mongoose.connect(process.env.MONGOLAB_URI);
 app.use(bodyParser.urlencoded({ extend: false }));
+mongoose.connect(process.env.MONGO_URI, { useNewUrlParse: true, useUnifiedTopology: true });
 app.use(cors());
 
+let Schema = mongoose.Schema;
+let shortUrlSchema = new Schema({
+  mainUrl: {
+    type: String,
+    required: true
+  },
+  shortenedUrl: {
+    type: Number,
+    required: true
+  }
+});
+
+let ShortUrl = mongoose.model('ShortUrl')
 /** this project needs to parse POST bodies **/
 // you should mount the body-parser here
 
