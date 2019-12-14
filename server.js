@@ -15,7 +15,7 @@ var port = process.env.PORT || 3000;
 // mongoose.connect(process.env.MONGOLAB_URI);
 app.use(bodyParser.urlencoded({extended: false}));
 
-mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true }).then(()=>console.log('db'));
+mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true });
 
 app.use(cors());
 
@@ -48,8 +48,10 @@ app.get("/api/hello", function (req, res) {
   res.json({greeting: 'hello API'});
 });
 
+let counter = 0;
 app.route('/api/shorturl/new').post((req, res) => {
-  let newUrl = new ShortUrl({original_url: req.body.url, short_url: 2});
+  counter++;
+  let newUrl = new ShortUrl({original_url: req.body.url, short_url: counter});
   newUrl.save((err, data) => {
     if(err) res.send('there is error');
     console.log(data);
