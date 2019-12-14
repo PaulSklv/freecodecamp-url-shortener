@@ -13,17 +13,17 @@ var port = process.env.PORT || 3000;
 
 /** this project needs a db !! **/ 
 // mongoose.connect(process.env.MONGOLAB_URI);
-app.use(bodyParser.urlencoded({ extend: false }));
-mongoose.connect(process.env.MONGO_URI, { useNewUrlParse: true, useUnifiedTopology: true });
+app.use(bodyParser.urlencoded({extended: false}));
+mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true });
 app.use(cors());
 
 let Schema = mongoose.Schema;
 let shortUrlSchema = new Schema({
-  mainUrl: {
+  original_url: {
     type: String,
     required: true
   },
-  shortenedUrl: {
+  short_url: {
     type: Number,
     required: true
   }
@@ -47,7 +47,12 @@ app.get("/api/hello", function (req, res) {
 });
 
 app.route('/api/shorturl/new').post((req, res) => {
-  let newUrl = new ShortUrl({mainUrl: req.body.url, shortenedUrl: })
+  let newUrl = new ShortUrl({original_url: req.body.url, short_url: 2});
+  newUrl.save((err, data) => {
+    if(err) res.send('there is error');
+    console.log(data);
+    res.json(data);
+  })
 })
 
 app.listen(port, function () {
