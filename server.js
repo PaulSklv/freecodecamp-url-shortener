@@ -29,7 +29,8 @@ let shortUrlSchema = new Schema({
   }
 });
 
-let ShortUrl = mongoose.model('ShortUrl')
+let ShortUrl = mongoose.model('ShortUrl', shortUrlSchema);
+
 /** this project needs to parse POST bodies **/
 // you should mount the body-parser here
 
@@ -46,7 +47,7 @@ app.get("/api/hello", function (req, res) {
 });
 
 app.route('/api/shorturl/new').post((req, res) => {
-  
+  let newUrl = new ShortUrl({mainUrl: req.body.url, shortenedUrl: })
 })
 
 app.listen(port, function () {
