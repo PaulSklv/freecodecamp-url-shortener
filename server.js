@@ -55,31 +55,35 @@ const checkUrl = (url) => {
   if (!regExp1.test(url)) {
     return false;
   } else {
-    return dns.lookup(url.match(regExp2), (err) => {
+    return dns.lookup(url.match(regExp2)[0], (err) => {
       if(err) return false;
       else return true;
     })
   }
 }
+
 app.route('/api/shorturl/new').post((req, res) => {
   if(checkUrl(req.body.url)) {
     ShortUrl.count({}, (err, count) => {
-        let newUrl = new ShortUrl({original_url: req.body.url, short_url: count + 1});
-        newUrl.save((err, data) => {
-          if(err) res.send('there is error');
-          console.log(data);
-          res.json(data);
-        })
+      let newUrl = new ShortUrl({original_url: req.body.url, short_url: count + 1});
+      newUrl.save((err, data) => {
+        if(err) res.send('there is error');
+        console.log(data);
+        res.json(data);
       })
+    })
   } else {
     res.json({error: "Invalid URL"})
   }
 })
-//   if (!checkUrl.test(req.body.url)) {
-//     res.json({error: "Invalid URL"})
-//   } else {
-    
-//   }
+
+app.get("/api/shorturl/:short", (req, res) => {
+  ShortUrl.findOne({ short_url: req.params.short }, (err, data) => {
+    if (err) res.send('there is error');
+    res.redirect(data.original_url);
+  })
+})
+
 app.listen(port, function () {
   console.log('Node.js listening ...');
 });
