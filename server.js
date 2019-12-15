@@ -16,7 +16,7 @@ var port = process.env.PORT || 3000;
 // mongoose.connect(process.env.MONGOLAB_URI);
 app.use(bodyParser.urlencoded({extended: false}));
 
-mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true });
+mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true });
 
 app.use(cors());
 
@@ -54,7 +54,7 @@ app.route('/api/shorturl/new').post((req, res) => {
   if (!checkUrl.test(req.body.url)) {
     res.json({error: "Invalid URL"})
   } else {
-    let newUrl = new ShortUrl({original_url: req.body.url, short_url: ShortUrl.estimatedDocumentCount({}, (err, count)=>{}) + 1});
+    let newUrl = new ShortUrl({original_url: req.body.url});
     newUrl.save((err, data) => {
     if(err) res.send('there is error');
     console.log(data);
