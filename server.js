@@ -27,8 +27,7 @@ let shortUrlSchema = new Schema({
     required: true
   },
   short_url: {
-    type: Number,
-    unique: true
+    type: Number
   }
 });
 
@@ -55,7 +54,7 @@ app.route('/api/shorturl/new').post((req, res) => {
   if (!checkUrl.test(req.body.url)) {
     res.json({error: "Invalid URL"})
   } else {
-    let newUrl = new ShortUrl({original_url: req.body.url, short_url});
+    let newUrl = new ShortUrl({original_url: req.body.url, short_url: ShortUrl.estimatedDocumentCount({}, (err, count)=>{}) + 1});
     newUrl.save((err, data) => {
     if(err) res.send('there is error');
     console.log(data);
