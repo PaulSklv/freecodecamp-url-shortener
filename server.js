@@ -51,7 +51,7 @@ app.get("/api/hello", function (req, res) {
 const checkUrl = /htt(p|ps):\/\/www.(\w+).(\w+)(\/\w+){0,}/g 
 
 app.route('/api/shorturl/new').post((req, res) => {
-  dns.lookup(req.body.url, (err) => {
+  dns.lookup(req.body.url, {verbatim: true}, (err) => {
     if(err && err.code === 'ENOTFOUND') res.json({error: "Invalid URL"});
     else {
       ShortUrl.count({}, (err, count) => {
