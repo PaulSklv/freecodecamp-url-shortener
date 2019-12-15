@@ -5,6 +5,7 @@ var mongo = require('mongodb');
 var mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 var cors = require('cors');
+// const dns = require('dns');
 
 var app = express();
 
@@ -48,10 +49,13 @@ app.get("/api/hello", function (req, res) {
   res.json({greeting: 'hello API'});
 });
 
-let counter = 0;
+const checkUrl = /htt(p|ps):\/\/www.(\w+).(\w+)(\/\w+){0,}/g 
+
 app.route('/api/shorturl/new').post((req, res) => {
-  counter++;
-  let newUrl = new ShortUrl({original_url: req.body.url, short_url: counter});
+  if (!checkUrl.test(req.body.url)) {
+    res.json({error: "Invalid URL"})
+  }
+  let newUrl = new ShortUrl({original_url: req.body.url});
   newUrl.save((err, data) => {
     if(err) res.send('there is error');
     console.log(data);
