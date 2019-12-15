@@ -48,13 +48,22 @@ app.get("/api/hello", function (req, res) {
   res.json({greeting: 'hello API'});
 });
 
-const checkUrl = /htt(p|ps):\/\/www.(\w+).(\w+)(\/\w+){0,}/g 
+const regExp1 = /htt(p|ps):\/\/www.(\w+).(\w+)(\/\w+){0,}/g; 
+const regExp2 = /www.\w+.\w+/g;
 
+const checkUrl = (url) => {
+  if (!regExp1.test(url)) {
+    return false;
+  } else {
+    return dns.lookup(url.match(regExp2), (err) => {
+      if(err) return false;
+      else return true;
+    })
+  }
+}
 app.route('/api/shorturl/new').post((req, res) => {
-  dns.lookup(req.body.url, {verbatim: true}, (err) => {
-    if(err && err.code === 'ENOTFOUND') res.json({error: "Invalid URL"});
-    else {
-      ShortUrl.count({}, (err, count) => {
+  if(checkUrl(req.body.url)) {
+    ShortUrl.count({}, (err, count) => {
         let newUrl = new ShortUrl({original_url: req.body.url, short_url: count + 1});
         newUrl.save((err, data) => {
           if(err) res.send('there is error');
@@ -62,8 +71,9 @@ app.route('/api/shorturl/new').post((req, res) => {
           res.json(data);
         })
       })
-    }
-  })
+  } else {
+    res.json({error: "Invalid URL"})
+  }
 })
 //   if (!checkUrl.test(req.body.url)) {
 //     res.json({error: "Invalid URL"})
