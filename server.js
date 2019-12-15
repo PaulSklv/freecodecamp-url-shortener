@@ -5,7 +5,7 @@ var mongo = require('mongodb');
 var mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 var cors = require('cors');
-// const dns = require('dns');
+const dns = require('dns');
 
 var app = express();
 
@@ -51,19 +51,25 @@ app.get("/api/hello", function (req, res) {
 const checkUrl = /htt(p|ps):\/\/www.(\w+).(\w+)(\/\w+){0,}/g 
 
 app.route('/api/shorturl/new').post((req, res) => {
-  if (!checkUrl.test(req.body.url)) {
-    res.json({error: "Invalid URL"})
-  } else {
-    let newUrl = new ShortUrl({original_url: req.body.url});
-    newUrl.save((err, data) => {
-    if(err) res.send('there is error');
-    console.log(data);
-    res.json(data);
+  dns.lookup(req.body.url, (err) => {
+    if(err && err.code === 'ENOTFOUND') res.json({error: "Invalid URL"});
+    else {
+      ShortUrl.count({}, (err, count) => {
+        let newUrl = new ShortUrl({original_url: req.body.url, short_url: count + 1});
+        newUrl.save((err, data) => {
+          if(err) res.send('there is error');
+          console.log(data);
+          res.json(data);
+        })
+      })
+    }
   })
-  }
-  
 })
-
+//   if (!checkUrl.test(req.body.url)) {
+//     res.json({error: "Invalid URL"})
+//   } else {
+    
+//   }
 app.listen(port, function () {
   console.log('Node.js listening ...');
 });
