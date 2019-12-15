@@ -54,13 +54,15 @@ const checkUrl = /htt(p|ps):\/\/www.(\w+).(\w+)(\/\w+){0,}/g
 app.route('/api/shorturl/new').post((req, res) => {
   if (!checkUrl.test(req.body.url)) {
     res.json({error: "Invalid URL"})
-  }
-  let newUrl = new ShortUrl({original_url: req.body.url});
-  newUrl.save((err, data) => {
+  } else {
+    let newUrl = new ShortUrl({original_url: req.body.url, short_url});
+    newUrl.save((err, data) => {
     if(err) res.send('there is error');
     console.log(data);
     res.json(data);
   })
+  }
+  
 })
 
 app.listen(port, function () {
